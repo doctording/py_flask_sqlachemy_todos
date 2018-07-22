@@ -76,3 +76,15 @@ http://flask-sqlalchemy.pocoo.org/2.3/
 https://github.com/lalor/todolist
 
 ---
+
+## edition 2
+
+使用`cookie`, `session`，处理表单登录相关
+
+- [ ] 代码优化
+
+- [ ] 界面优化
+
+- [ ] 增删改查功能完善
+
+# Todo

@@ -9,4 +9,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SECRET_KEY = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 # mysql数据库连接信息,这里改为自己的账号
-SQLALCHEMY_DATABASE_URI = "mysql://root:123456@127.0.0.1:3306/test"
+SQLALCHEMY_DATABASE_URI = "mysql://root:@127.0.0.1:3306/test"

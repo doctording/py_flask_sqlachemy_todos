@@ -1,8 +1,9 @@
-
 # db = SQLAlchemy(app)
 from web import db
 
+
 class Todo(db.Model):
+
     __tablename__ = 't_todo'
     id = db.Column(db.Integer, primary_key=True)
     sno = db.Column(db.String(255))

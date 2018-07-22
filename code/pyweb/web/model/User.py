@@ -1,6 +1,7 @@
 # db = SQLAlchemy(app)
 from web import db
 
+
 class User(db.Model):
     __tablename__ = 't_user'
     id = db.Column(db.Integer, primary_key=True)
