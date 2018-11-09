@@ -119,9 +119,9 @@ The statement the thread is executing, or `NULL` if it is not executing any stat
 ![](../imgs/sqlachemy-01.png)
 
 
-首先代码写的时候`session`是没有`close, 并且连接池数量很小（<font color="red">故意这么做的</font>）
+首先代码写的时候`session`是没有`close`的, 并且连接池数量很小（<font color="red">故意这么做的</font>）
 
-`wait_time`含义：交互式和非交互式链接的超时设置, 防止客户端长时间链接数据库,什么都不做处于sleep状态，强制关闭长时间的sleep连接。默认情况先两值的都为28800s(8小时)
+`wait_time`含义：交互式和非交互式链接的超时设置, 防止客户端长时间链接数据库,什么都不做处于sleep状态，强制关闭长时间的sleep连接。默认情况下该值为28800s(8小时)
 
 原因分析：
 
@@ -229,12 +229,12 @@ def test2():
 ![](../imgs/jmeter-02.png)
 
 
-所以`session`开了千万记得`close()`,`close()`,`close()`, 同时也应该把连接池的数量设置高一点
+所以`session`开了千万记得`close()`,`close()`,`close()`, 同时也应该把连接池的数量设置高一点，不然分配不到session
 
 
 # max_connections(MySQL variables)
 
-使用Sqlachemy的NullPool,
+使用Sqlachemy的`NullPool`,
 
 ```python
 engine = create_engine('mysql://root:@127.0.0.1:3306/test',poolclass=NullPool,echo=True)
@@ -273,7 +273,7 @@ def test1():
     return "test1"
 ```
 
-因为`max_connections`是150(151有个1是给root的)，没有使用线程池，500个并发请求，同一时刻会有超过150个MySQL连接线程，这样就会报<font color='red'>too many connections</font>错误
+因为`max_connections`是150(151有个1是给root的),没有使用线程池，500个并发请求，同一时刻会有超过150个MySQL连接线程，这样就会报<font color='red'>too many connections</font>错误
 
 ![](../imgs/jmeter-connection-01.png)
 
