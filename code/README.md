@@ -192,7 +192,7 @@ mysql> show full processlist;
 5 rows in set (0.00 sec)
 ```
 
-又出现了同样的报错
+又出现了同样的报错
 
 ![](../imgs/sqlachemy-02.png)
 
