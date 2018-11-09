@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>Login</h2>
+    <form action="{{ url_for('login') }}" method=post>
+        <dl>
+            <dt>Sno:<dd><input type=text name=sno value={{ cookie_sno }} >
+            <dt>Password:<dd><input type=password name=password value={{ cookie_pass }} >
+            <dd><input type=checkbox name=checkbox value=selected {{ checked }}>记住密码
+            <dd><input type=submit value=Login />
+        </dl>
+    </form>
+{% endblock %}

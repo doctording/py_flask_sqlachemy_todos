@@ -5,14 +5,17 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 ---
 
+## 知识点,遇到的问题
 
-## 主要知识点
+* flask框架简单使用 + Python 基础
 
-* flask简单使用
+* Sqlachemy,Flask-Sqlachemy
 
-* sqlalchemy操作mysql 
+* [MySQL自身状态的认识](https://blog.csdn.net/qq_26437925/article/details/83782403)
 
-* python 基础
+* [数据库连接池和Sqlachemy](./db_pool.md)
+
+* [TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 ;;; too many connections](./code/README.md)
 
 ## 主要开发环境要求
 
@@ -21,7 +24,6 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 * flask, sqlalchemy(数据库rom)
 
 * mysql （见test.sql文件）
-
 
 ## 功能说明
 
@@ -75,16 +77,5 @@ http://flask-sqlalchemy.pocoo.org/2.3/
 
 https://github.com/lalor/todolist
 
----
-
-## edition 2
-
-使用`cookie`, `session`，处理表单登录相关
-
-- [ ] 代码优化
-
-- [ ] 界面优化
-
-- [ ] 增删改查功能完善
 
 # Todo
