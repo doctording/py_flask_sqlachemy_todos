@@ -63,6 +63,35 @@ https://docs.sqlalchemy.org/en/latest/core/engines.html#engine-creation-api
 * **pool_timeout=30** – number of seconds to wait before giving up on getting a connection from the pool. This is only used with `QueuePool`.
 
 
+## Session and sessionmaker()
+
+https://docs.sqlalchemy.org/en/latest/orm/session_api.html?highlight=sessionmaker#session-and-sessionmaker
+
+* sessionmaker
+
+```python
+class sqlalchemy.orm.session.sessionmaker(bind=None, class_=<class 'sqlalchemy.orm.session.Session'>, autoflush=True, autocommit=False, expire_on_commit=True, info=None, **kw)
+
+# Bases: sqlalchemy.orm.session._SessionClassMethods
+```
+
+A configurable `Session` factory.
+
+The `sessionmaker` factory generates new `Session` objects when called, creating them given the configurational arguments established here.
+
+* Session
+
+```python
+class sqlalchemy.orm.session.Session(bind=None, autoflush=True, expire_on_commit=True, _enable_transaction_accounting=True, autocommit=False, twophase=False, weak_identity_map=True, binds=None, extension=None, enable_baked_queries=True, info=None, query_cls=<class 'sqlalchemy.orm.query.Query'>)
+
+# Bases: sqlalchemy.orm.session._SessionClassMethods
+```
+
+Manages persistence operations for ORM-mapped objects.
+
+session的详解需阅读：https://docs.sqlalchemy.org/en/latest/orm/session.html
+
+
 ### QueuePool
 
 ```python

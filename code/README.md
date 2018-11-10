@@ -134,7 +134,7 @@ engine = create_engine('mysql://root:@127.0.0.1:3306/test',
                         echo=True)
 ```
 
-由于超过8小时处理sleep状态，session被关闭了，然后sqlachemy的连接数设置也已经连接满了,刷新页面由于session过期，然后就报错: ```TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 (Background on this error at: http://sqlalche.me/e/3o7r)```
+由于超过8小时处于sleep状态的MySQL连接被关闭了，即Sqlachemy中的连接session失效了，然后Sqlachemy的连接数设置也已经连接满了,刷新页面请求连接仍然返回原来的session(其已经过期)，然后就报错: ```TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 (Background on this error at: http://sqlalche.me/e/3o7r)```
 
 为了复现问题
 
@@ -192,7 +192,7 @@ mysql> show full processlist;
 5 rows in set (0.00 sec)
 ```
 
-又出现了同样的报错
+如上有一个连接超过了60s(wait_timeout),而程序设置的连接池`pool_recycle=-1`(pool_recycle表示多久之后对线程池中的线程进行一次连接的回收（重置）, -1表示永不回收)，所以刷新页面又出现了同样的报错，如下
 
 ![](../imgs/sqlachemy-02.png)
 

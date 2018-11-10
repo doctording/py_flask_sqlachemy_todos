@@ -72,7 +72,7 @@ def add_todo():
         abort(401)
     task = request.form['text']
     sno = session['sno']
-    todo_new = Todo.Todo(sno, task, 0, datetime.datetime.now())
+    todo_new = Todo(sno, task, 0, datetime.datetime.now())
     db_session = DB_Session()
     db_session.add(todo_new)
     db_session.commit()
