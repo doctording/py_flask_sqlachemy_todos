@@ -29,7 +29,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']  = False
 """
 create_engine 会返回一个数据库引擎，echo 参数为 True 时，会显示每条执行的 SQL 语句，生产环境下可关闭
 """
-engine = create_engine('mysql://root:@127.0.0.1:3306/test',
+engine = create_engine('mysql://root:@127.0.0.1:3306/test?charset=utf8',
                         max_overflow = 20,  # 超过连接池大小外最多创建的连接
                         pool_size = 50,  # 连接池大小
                         pool_timeout = 30,  # 池中没有线程最多等待的时间，否则报错
