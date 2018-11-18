@@ -27,7 +27,7 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 * python 2.7
 
-* flask, sqlalchemy(数据库rom)
+* flask,sqlalchemy,flask-salachmey(数据库orm)
 
 * mysql （见test.sql文件）
 
