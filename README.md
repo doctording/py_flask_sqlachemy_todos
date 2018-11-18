@@ -17,11 +17,11 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 * 几个数据库报错问题 => [重点理解分析](./code/README.md)
 
-1. TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30
+1. `TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30`
 
-2. too many connections
+2. `too many connections`
 
-3. Lost Connection to MySQL server
+3. `Lost Connection to MySQL server`
 
 ## 主要开发环境要求
 
