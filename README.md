@@ -15,7 +15,7 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 * [数据库连接池和Sqlachemy](./db_pool.md)
 
-* [TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 ;;; too many connections](./code/README.md)
+* [TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 ;;; too many connections;; Lost Connection to MySQL server](./code/README.md)
 
 ## 主要开发环境要求
 

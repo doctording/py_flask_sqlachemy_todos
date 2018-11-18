@@ -114,7 +114,7 @@ The statement the thread is executing, or `NULL` if it is not executing any stat
 
 # 问题分析
 
-前一天是正常的，过了一晚刷页面出现这个问题
+前一天是正常的，过了一晚刷个页面出现这个问题
 
 ![](../imgs/sqlachemy-01.png)
 
@@ -134,9 +134,9 @@ engine = create_engine('mysql://root:@127.0.0.1:3306/test',
                         echo=True)
 ```
 
-由于超过8小时处于sleep状态的MySQL连接被关闭了，即Sqlachemy中的连接session失效了，然后Sqlachemy的连接数设置也已经连接满了,刷新页面请求连接仍然返回原来的session(其已经过期)，然后就报错: ```TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 (Background on this error at: http://sqlalche.me/e/3o7r)```
+此页面打开之后有其它连接('/test2',该连接没有释放session)已经占满了连接池，由于超过8小时处于sleep状态的MySQL连接被关闭了，然后Sqlachemy的连接数设置也已经连接满了,刷新页面请求连接时需要重新建立MySQL连接，但是此时已无法新建连接了，然后就Sqlachemy报错: ```TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 (Background on this error at: http://sqlalche.me/e/3o7r)```
 
-为了复现问题
+复现问题
 
 ```sql
 set global wait_timeout=60;
@@ -192,14 +192,113 @@ mysql> show full processlist;
 5 rows in set (0.00 sec)
 ```
 
-如上有一个连接超过了60s(wait_timeout),而程序设置的连接池`pool_recycle=-1`(pool_recycle表示多久之后对线程池中的线程进行一次连接的回收（重置）, -1表示永不回收)，所以刷新页面又出现了同样的报错，如下
+如上有一个连接超过了60s(wait_timeout),而程序设置的连接池`pool_recycle=-1`(pool_recycle表示多久之后对线程池中的线程进行一次连接的回收（重置）, -1表示永不回收)，所以多开几个页面并刷新，又出现了同样的报错，如下
 
 ![](../imgs/sqlachemy-02.png)
 
-不断的这么刷页面玩，这种报错在每个页面都能出现，而且新开个页面也报错
+实际是开了很多个页面(当然超过5个)，不断的刷页面，报错不是直接的，而是浏览器转了大概`pool_timeout`的时间数，然后出现如下报错
+
 ![](../imgs/sqlachemy-03.png)
 
-正是由于session过期，但是服务仍然启动着，sqlachemy的pool_size是5，session过期不可用，但是仍然在池子中，虽然session由于没有引用会被垃圾回收，但这是不确定的，至少这里能复现了connect timeout问题。
+
+* 实际报错如下
+
+```python
+TimeoutError: QueuePool limit of size 5 overflow 20 reached, connection timed out, timeout 30 (Background on this error at: http://sqlalche.me/e/3o7r)
+Traceback (most recent call last):
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 2309, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 2295, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 1741, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Python/2.7/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/mubi/git_workspace/MyTodos/code/pyweb2/web/controller/manage.py", line 103, in test2
+    todos = db_session.query(Todo).all()
+```
+
+## Lost connection to MySQL server
+
+* pyweb3代码实践中实际还出现如下错误，connect超过`wait_timeout`被回收了,导致session无效，然后还用这个session操作数据库，就会报错`Lost connection to MySQL server`
+
+```python
+sqlalchemy.exc.OperationalError
+OperationalError: (_mysql_exceptions.OperationalError) (2013, 'Lost connection to MySQL server during query') [SQL: u'SELECT t_todo.id AS t_todo_id, t_todo.sno AS t_todo_sno, t_todo.task AS t_todo_task, t_todo.finish AS t_todo_finish, t_todo.createtime AS t_todo_createtime \nFROM t_todo'] (Background on this error at: http://sqlalche.me/e/e3q8)
+```
+
+1. 先设置`wait_timeout`
+
+```sql
+set global wait_timeout=28800;
+```
+
+2. 直接利用如下脚本复现
+
+```python
+# -*- coding:utf-8 -*-
+import pymysql
+import time
+
+
+class Database(object):
+
+    def __init__(self):
+        self.dbhost = '127.0.0.1'
+        self.port = 3306
+        self.dbuser = 'root'
+        self.dbpass = ''
+        self.dbname = 'test'
+        # DB_URI = 'mysql://' + dbuser + ':' + dbpass + '@' + dbhost + '/' + dbname
+        self.conn = None
+
+    def connect(self):
+        self.conn = pymysql.connect(host=self.dbhost,
+                                port=self.port,
+                                user=self.dbuser,
+                                password=self.dbpass,
+                                database=self.dbname)
+
+    def close(self):
+        try:
+            self.conn.close()
+        except:
+            raise ValueError('conn close exception')
+
+    def query(self, sql):
+        if self.db:
+            cursor = self.db.cursor()
+            cursor.execute(sql)
+        else:
+            raise ValueError('DB not connected')
+
+
+def handle_query():
+    db = Database()
+    db.connect()
+    # 可以睡眠超过`wait_timeout`
+    print("sleep 6 seconds") 
+    time.sleep(6)
+    cur = db.conn.cursor()
+    sql = "select id, sno, name from t_user"
+    cur.execute(sql)
+    rows = cur.fetchall()
+    print(rows)
+    cur.close()
+
+    db.close()
+
+if __name__ == '__main__':
+    handle_query()
+```
 
 ## 进一步测试不关闭session的并发问题
 

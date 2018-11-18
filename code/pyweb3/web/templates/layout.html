@@ -1,0 +1,17 @@
+<!doctype html>
+<title>Todo</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+ <h1>MyTodos</h1>
+ <div class=metanav>
+ {% if not session.logged_in %}
+  <a href="{{ url_for('tologin') }}">log in</a>
+ {% else %}
+  欢迎你:{{ session['sno'] }}. <a href="{{ url_for('logout') }}">log out</a>
+ {% endif %}
+ </div>
+ {% for message in get_flashed_messages() %}
+  <div class=flash>{{ message }}</div>
+ {% endfor %}
+ {% block body %}{% endblock %}
+</div>

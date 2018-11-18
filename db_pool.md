@@ -136,3 +136,92 @@ A Pool which does not pool connections.
 Instead it literally opens and closes the underlying DB-API connection per each connection open/close.
 
 Reconnect-related functions such as `recycle` and connection invalidation are not supported by this Pool implementation, since no connections are held persistently.
+
+
+# sqlachemy & MySQL
+
+pyweb3项目中,连接参数设置如下
+
+```python
+SQLALCHEMY_DATABASE_URI = "mysql://root:@127.0.0.1:3306/test"
+
+SQLALCHEMY_POOL_SIZE = 5 # 数据库连接池的大小
+
+SQLALCHEMY_POOL_TIMEOUT = 10 # 默认是10
+
+SQLALCHEMY_ECHO = True
+
+# SQLALCHEMY_POOL_RECYCLE = 3600 # 3600秒自动回收连接
+```
+
+wait_timeout=28800秒，SQLALCHEMY_POOL_RECYCLE(自动回收没有设置)，当用jmeter并发测试 `/test2`时
+
+* thread_group=50
+
+连接池只使用了5个
+
+```sql
+mysql> show status like 'Threads%';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_cached    | 4     |
+| Threads_connected | 6     |
+| Threads_created   | 256   |
+| Threads_running   | 1     |
++-------------------+-------+
+4 rows in set (0.00 sec)
+
+mysql> show full processlist;
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+| Id  | User | Host            | db   | Command | Time | State | Info                  |
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+| 440 | root | localhost       | NULL | Query   |    0 | init  | show full processlist |
+| 458 | root | localhost:55125 | test | Sleep   |    5 |       | NULL                  |
+| 459 | root | localhost:55128 | test | Sleep   |    5 |       | NULL                  |
+| 460 | root | localhost:55126 | test | Sleep   |    5 |       | NULL                  |
+| 461 | root | localhost:55127 | test | Sleep   |    5 |       | NULL                  |
+| 462 | root | localhost:55130 | test | Sleep   |    5 |       | NULL                  |
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+6 rows in set (0.00 sec)
+```
+
+* thread_group=200
+
+设置的11个线程池大小都用了
+```sql
+mysql> show full processlist;
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+| Id  | User | Host            | db   | Command | Time | State | Info                  |
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+| 440 | root | localhost       | NULL | Query   |    0 | init  | show full processlist |
+| 479 | root | localhost:55567 | test | Sleep   |  191 |       | NULL                  |
+| 482 | root | localhost:55571 | test | Sleep   |  191 |       | NULL                  |
+| 483 | root | localhost:55572 | test | Sleep   |  191 |       | NULL                  |
+| 488 | root | localhost:55580 | test | Sleep   |  191 |       | NULL                  |
+| 491 | root | localhost:55585 | test | Sleep   |  191 |       | NULL                  |
+| 493 | root | localhost:55589 | test | Sleep   |  191 |       | NULL                  |
+| 494 | root | localhost:55591 | test | Sleep   |  191 |       | NULL                  |
+| 495 | root | localhost:55593 | test | Sleep   |  191 |       | NULL                  |
+| 497 | root | localhost:55598 | test | Sleep   |  191 |       | NULL                  |
+| 498 | root | localhost:55599 | test | Sleep   |  191 |       | NULL                  |
+| 499 | root | localhost:55601 | test | Sleep   |  191 |       | NULL                  |
++-----+------+-----------------+------+---------+------+-------+-----------------------+
+12 rows in set (0.00 sec)
+
+mysql> show status like 'Threads%';
++-------------------+-------+
+| Variable_name     | Value |
++-------------------+-------+
+| Threads_cached    | 9     |
+| Threads_connected | 12    |
+| Threads_created   | 280   |
+| Threads_running   | 1     |
++-------------------+-------+
+4 rows in set (0.00 sec)
+
+mysql>
+```
+
+使用连接池后并不是直接开了`SQLALCHEMY_POOL_SIZE`个大小的连接线程保持在那里，而是根据实际连接创建的。
+可能对于50的并发，5个连接池可以复用胜任；而对于200，需要11个连接池都用完，才能达到更好的效果（8个，10个可能也足够,但是不如11个的优势）
