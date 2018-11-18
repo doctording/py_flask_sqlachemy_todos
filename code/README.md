@@ -119,7 +119,7 @@ The statement the thread is executing, or `NULL` if it is not executing any stat
 ![](../imgs/sqlachemy-01.png)
 
 
-首先代码写的时候`session`是没有`close`的, 并且连接池数量很小（<font color="red">故意这么做的</font>）
+首先代码写的时候`session`是没有`close`的, 并且连接池数量很小（**session不关闭,会占用线程池的连接，其它想使用的会使用不了，危害很大**）
 
 `wait_time`含义：交互式和非交互式链接的超时设置, 防止客户端长时间链接数据库,什么都不做处于sleep状态，强制关闭长时间的sleep连接。默认情况下该值为28800s(8小时)
 
