@@ -1,7 +1,7 @@
 
 ## 项目简介
 
-python flask+mysql搭建的一个web项目，主要是一个记录个人待办事项的系统。
+python flask+mysql搭建的一个web项目，主要是一个记录个人待办事项的系统。基于此项目重点理解几个关于Sqlacmhey，MySQL的问题
 
 ---
 
@@ -15,7 +15,13 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 * [数据库连接池和Sqlachemy](./db_pool.md)
 
-* [TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30 ;;; too many connections;; Lost Connection to MySQL server](./code/README.md)
+* 几个数据库报错问题 => [重点理解分析](./code/README.md)
+
+1. TimeoutError: QueuePool limit of size 5 overflow 0 reached, connection timed out, timeout 30
+
+2. too many connections
+
+3. Lost Connection to MySQL server
 
 ## 主要开发环境要求
 
