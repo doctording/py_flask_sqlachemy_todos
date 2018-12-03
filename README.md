@@ -23,6 +23,36 @@ python flask+mysql搭建的一个web项目，主要是一个记录个人待办�
 
 3. `Lost Connection to MySQL server`
 
+## jmeter测试[聚合报告]参数含义
+
+* Label：每个请求的名称，比如HTTP请求等
+
+* #Samples：发给服务器的请求数量
+
+* Average：单个请求的平均响应时间。默认是单个Request的平均响应时间，当使用了Transaction Controller时，也可以以Transaction为单位显示平均响应时间
+
+* Median：中位数，也就是50%用户的响应时间
+
+* 90%Line：90%用户的响应时间
+
+* 95%Line：95%用户的响应时间
+
+* 99%Line：99%用户的响应时间
+
+* Min：最小的响应时间
+
+* Max：最大的响应时间
+
+* Error%：错误率，本次测试中出现错误的请求的数量/请求的总数
+
+* Throughput：吞吐量。默认情况下表示每秒完成的请求数，吞吐量=请求数/总时间
+
+* Received KB/sec：每秒从服务器端接收到的数据量，即：收到的千字节每秒的吞吐量测试
+
+* Sent KB/sec：每秒从客户端发送的请求的数量，即：发送的千字节每秒的吞吐量测试
+
+参考：https://blog.csdn.net/automationwei/article/details/80734178
+
 ## 主要开发环境要求
 
 * python 2.7
@@ -82,6 +112,5 @@ http://flask-sqlalchemy.pocoo.org/2.3/
 * 思路来源
 
 https://github.com/lalor/todolist
-
 
 # Todo
