@@ -228,7 +228,7 @@ Traceback (most recent call last):
 
 ## Lost connection to MySQL server
 
-* pyweb3代码实践中实际还出现如下错误，connect超过`wait_timeout`被回收了,导致session无效，然后还用这个session操作数据库，就会报错`Lost connection to MySQL server`
+* 代码实践中实际还出现如下错误，connect超过`wait_timeout`被回收了,导致session无效，然后还用这个session操作数据库，就会报错`Lost connection to MySQL server`
 
 ```python
 sqlalchemy.exc.OperationalError
@@ -328,7 +328,7 @@ def test2():
 ![](../imgs/jmeter-02.png)
 
 
-所以`session`开了千万记得`close()`,`close()`,`close()`, 同时也应该把连接池的数量设置高一点，不然分配不到session
+所以`session`开了千万记得`close()`,`close()`,`close()`, 同时连接池数量的设置千万不能默认，不设置(**应该根据实际合理设置,#TODO**)，不然分配不到session
 
 
 # max_connections(MySQL variables)
